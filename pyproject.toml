@@ -1,0 +1,34 @@
+[project]
+name = "dockerfile-ai"
+version = "0.1.0"
+description = "AI-powered Dockerfile analyzer and fixer using Ollama"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+dependencies = [
+    "typer>=0.9.0",
+    "rich>=13.7.0",
+    "pydantic>=2.6.1",
+    "httpx>=0.26.0",
+    "python-dotenv>=1.0.0",
+]
+requires-python = ">=3.9"
+
+[project.scripts]
+dockerfile-ai = "dockerfile_ai.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "pytest>=7.4.0",
+    "black>=23.12.0",
+    "ruff>=0.1.14",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39" 

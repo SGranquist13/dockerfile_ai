@@ -1,0 +1,96 @@
+# Start with a large, general-purpose base image that includes a lot of unnecessary tools
+FROM ubuntu:latest
+
+# Set environment variables individually and in multiple steps
+ENV APP_HOME=/app
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+# Install multiple packages using separate RUN commands
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends python3 python3-pip git curl build-essential
+
+# Do not clean up apt cache in the same layer
+RUN apt-get clean
+
+# Create directories individually
+RUN mkdir /app
+RUN mkdir /app/src
+RUN mkdir /app/data
+RUN mkdir /tmp/build
+
+# Copy the entire current directory into the image unnecessarily early
+COPY . /app/src
+
+# Change working directory multiple times
+WORKDIR /app/src
+
+# Install Python dependencies without using a requirements file or virtual environment initially
+RUN pip3 install requests
+RUN pip3 install Flask
+RUN pip3 install sqlalchemy
+
+# Copy the entire directory AGAIN to a different location
+COPY /app/src /tmp/build/src_copy
+
+# Perform some arbitrary and unnecessary file operations
+RUN cp -r /app/src /app/data/src_backup
+RUN rm -rf /tmp/build
+
+# Download a file using curl and don't clean it up
+RUN curl -o /app/downloaded_file.txt https://raw.githubusercontent.com/some/large/file/or/example.txt
+
+# Add more dependencies in a new layer
+RUN apt-get install -y wget
+
+# Set another environment variable late in the process
+ENV MY_CONFIG=development
+
+# Use ADD with a remote URL (less predictable than curl in some cases and creates a layer)
+ADD https://raw.githubusercontent.com/another/random/file/data.csv /app/data/downloaded_data.csv
+
+# Expose a port early, even if the application isn't ready to serve
+EXPOSE 8000
+
+# Define a user but don't switch to it until later, if at all
+RUN useradd -m appuser
+
+# Switch to the less privileged user
+USER appuser
+
+# Copy files again with changed ownership (inefficient layer creation)
+COPY --chown=appuser:appuser /app/src /home/appuser/app/
+
+# Change back to root for no good reason
+USER root
+
+# Install more packages as root
+RUN apt-get update && apt-get install -y htop less tree
+
+# Clean apt cache again, still in a separate layer
+RUN rm -rf /var/lib/apt/lists/*
+
+# Set the working directory back to the app location
+WORKDIR /home/appuser/app
+
+# Use a shell form CMD which can have signal handling issues
+CMD python3 app.py
+
+# Add a healthcheck that is overly simple and might not be effective
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://localhost:8000 || exit 1
+
+# Include a LABEL with potentially sensitive information or unnecessary detail
+LABEL maintainer="Unoptimized Creator <unoptimized@example.com>"
+LABEL version="1.0-unoptimized"
+LABEL description="This is a very unoptimized Dockerfile for testing purposes."
+
+# Another unnecessary copy operation
+COPY . /tmp/final_copy
+
+# Leave temporary files and directories around
+RUN mkdir /app/temporary_dir
+RUN echo "temp content" > /app/temporary_dir/file.txt
+
+# Final command, potentially redundant
+ENTRYPOINT ["/usr/bin/python3", "app.py"]
