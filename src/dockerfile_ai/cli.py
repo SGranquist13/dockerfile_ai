@@ -57,12 +57,6 @@ def extract_dockerfile_content(text: str) -> str:
 async def query_ollama(dockerfile_content: str, model: str) -> str:
     """Query Ollama API with the Dockerfile content."""
     prompt = format_prompt(dockerfile_content)
-    
-    # System prompt to guide the model
-    system_prompt = """You are an expert Docker and security engineer. Your task is to analyze Dockerfiles and provide detailed recommendations.
-You must follow the exact format specified in the prompt, including both the analysis report and the corrected Dockerfile.
-The corrected Dockerfile must be complete and valid, not just a single command.
-Always wrap the corrected Dockerfile in a triple-quoted code block with dockerfile syntax highlighting."""
 
     async with httpx.AsyncClient() as client:
         try:
@@ -71,7 +65,6 @@ Always wrap the corrected Dockerfile in a triple-quoted code block with dockerfi
                 json={
                     "model": model,
                     "prompt": prompt,
-                    "system": system_prompt,
                     "temperature": 0.7,
                     "top_p": 0.9,
                     "max_tokens": 4000
