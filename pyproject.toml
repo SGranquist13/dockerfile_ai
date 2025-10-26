@@ -11,11 +11,13 @@ dependencies = [
     "pydantic>=2.6.1",
     "httpx>=0.26.0",
     "python-dotenv>=1.0.0",
+    "mcp>=1.0.0",
 ]
 requires-python = ">=3.9"
 
 [project.scripts]
 dockerfile-ai = "dockerfile_ai.cli:app"
+dockerfile-ai-mcp = "dockerfile_ai.mcp_server:run"
 
 [build-system]
 requires = ["hatchling"]

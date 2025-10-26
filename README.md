@@ -11,6 +11,7 @@ A modern CLI tool that uses Ollama to analyze Dockerfiles and suggest improvemen
 - 💾 Save corrected Dockerfile to a file
 - 📋 Copy-friendly output option
 - 🎯 Configurable Ollama model
+- 🔌 MCP (Model Context Protocol) server for integration with AI assistants
 
 ## Prerequisites
 
@@ -81,6 +82,38 @@ dockerfile-ai analyze path/to/your/Dockerfile
   # Linux/macOS
   export OLLAMA_MODEL=qwen2.5-coder:7b
   ```
+
+## MCP Server
+
+Dockerfile AI can also run as an MCP (Model Context Protocol) server, allowing you to integrate it with AI assistants like Claude Desktop.
+
+### Quick Start
+
+1. Install the package:
+   ```bash
+   pip install -e .
+   ```
+
+2. Configure Claude Desktop to use the MCP server by adding to your `claude_desktop_config.json`:
+   ```json
+   {
+     "mcpServers": {
+       "dockerfile-ai": {
+         "command": "dockerfile-ai-mcp",
+         "env": {
+           "OLLAMA_MODEL": "qwen2.5-coder:7b"
+         }
+       }
+     }
+   }
+   ```
+
+3. Start using it in Claude Desktop:
+   ```
+   Can you analyze the Dockerfile at /path/to/Dockerfile?
+   ```
+
+For detailed setup instructions, see [MCP_SERVER.md](MCP_SERVER.md).
 
 ## Example Output
 
